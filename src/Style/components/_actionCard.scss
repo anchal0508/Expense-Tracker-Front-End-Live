@@ -1,0 +1,119 @@
+.s-card {
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    left: -490px;
+    border-radius: 50px;
+    transition: all 0.5s ease-out;
+    z-index: 5;
+
+    &--sort-closed {
+        top: 25px;
+        background-color: var(--font-color-muted);
+        box-shadow: 0 5px 5px var(--primary);
+        color: var(--main-background);
+        z-index: 6;
+
+        span {
+            color: var(--main-background);
+            position: absolute;
+            right: -18px;
+            z-index: 7;
+        }
+    }
+
+    &--sort-open {
+        top: 25px;
+        background-color: var(--font-color-muted);
+        left: 0;
+        box-shadow: 0 5px 5px var(--primary);
+        z-index: 6;
+
+        h1 {
+            color: var(--main-background);
+        }
+
+        span {
+            color: var(--main-background);
+            position: absolute;
+            right: -18px;
+            z-index: 7;
+        }
+    }
+
+    &--filter-closed {
+        top: 75px;
+        box-shadow: 0 5px 5px var(--border-color);
+        background-color: var(--main-background);
+        color: var(--main-background);
+        z-index: 8;
+
+        span {
+            color: var(--border-color);
+            position: absolute;
+            right: -18px;
+            z-index: 9;
+        }
+    }
+
+    &--filter-open {
+        background-color: var(--card-background);
+        top: 75px;
+        left: 0;
+        box-shadow: 0 5px 5px var(--primary);
+        z-index: 8;
+
+        h1 {
+            color: var(--font-color-main);
+        }
+
+
+        span {
+            position: absolute;
+            right: -18px;
+            z-index: 9;
+            color: var(--border-color);
+        }
+    }
+
+
+
+
+
+    &--update-closed {
+        top: 125px;
+        box-shadow: 0 5px 5px var(--primary);
+        background-color: var(--primary);
+        color: var(--main-background);
+        z-index: 10;
+
+        span {
+            color: var(--main-background);
+            position: absolute;
+            right: -18px;
+            z-index: 11;
+            color: var(--border-color);
+        }
+    }
+
+    &--update-open {
+        top: 125px;
+        box-shadow: 0 5px 5px var(--primary);
+        background-color: var(--primary);
+        left: 0;
+        z-index: 10;
+
+        h1 {
+            color: var(--main-background);
+        }
+
+        span {
+            color: var(--main-background);
+            position: absolute;
+            right: -18px;
+            z-index: 11;
+            color: var(--border-color);
+        }
+    }
+
+}

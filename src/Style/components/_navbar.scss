@@ -1,0 +1,64 @@
+.navbar {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+
+    .logo-img {
+        display: inline-block;
+        width: 60px;
+
+        img {
+            width: 100%;
+        }
+    }
+
+
+
+    .action {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+
+        .switch {
+            margin: 10px 50px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+
+            &:hover {
+                border: 1px solid var(--border-color);
+                border-radius: 50px;
+                transform: translateX(0);
+                box-shadow: -45px 0  5px var(--border-color);
+            }
+            
+            &:active {
+                transform: translateX(-45px);
+                box-shadow: 45px 0  5px var(--border-color);
+
+            }
+
+            span {
+                text-transform: capitalize;
+            }
+
+        }
+
+        .logout-link {
+            cursor: pointer;
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+
+    }
+
+}

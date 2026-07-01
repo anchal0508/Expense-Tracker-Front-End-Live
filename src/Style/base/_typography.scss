@@ -1,0 +1,43 @@
+body,
+button,
+input,
+select {
+    font-family: 'Poppins', 'Inter', sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-weight: 600;
+    color: var(--font-color-main);
+    letter-spacing: -0.02em;
+}
+
+h1 {
+    font-size: 2rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+p {
+    color: var(--font-color-muted)
+}
+
+a {
+    text-decoration: none;
+    padding: 0.8rem 1.25rem;
+    color: var(--link-color);
+    transition: transform 0.2s ease-out, color 0.2s ease;
+
+
+    &:hover {
+        color: var(--link-hover);
+        transform: translateY(-3px);
+    }
+
+}

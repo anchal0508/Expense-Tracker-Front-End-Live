@@ -1,0 +1,78 @@
+// ==========================================
+// MULTI-THEME CONFIGURATION (Expense Tracker)
+// ==========================================
+
+// 1. Light Theme (Default / Master Theme)
+:root {
+    --main-background: #0A192F;    
+    --card-background: #112240;    
+    --font-color-main: #22c55e;    
+    --font-color-muted: #8892B0;   
+    --link-color: #10B981;         
+    --link-hover: #17e9a6;
+    --border-color: cyan;       
+    --border-color-light: rgba(0,255,255,0.3);       
+    --primary: orange;
+    --secondry: cyan;
+    --primary-hover: #4338ca;
+}
+
+// 2. Dark Theme (Modern Sleek Slate Dark)
+[data-theme="dark"] {
+    --main-background: #0f172a;    // Dark slate blue
+    --card-background: #1e293b;    // Soft dark for cards
+    --font-color-main: #f8fafc;    // Off-white text
+    --font-color-muted: #94a3b8;   // Soft gray text
+    --link-color: #818cf8;         // Lighter indigo for readability
+    --link-hover: #8a8cff;
+    --border-color: #334155;       // Darker borders
+    --border-color-light: rgba(51, 65, 85, 0.4); // Matching slate soft border
+    --primary: #6366f1;            // Modern Indigo
+    --secondry: #38bdf8;           // Sleek sky blue
+    --primary-hover: #4f46e5;
+}
+
+// 3. Happy Theme (Warm Pastel & Positive Vibe)
+[data-theme="happy"] {
+    --main-background: #fffbeb;    // Warm cream background
+    --card-background: #ffffff;    // White cards
+    --font-color-main: #78350f;    // Deep warm amber text
+    --font-color-muted: #b45309;   // Soft amber text
+    --link-color: #db2777;         // Vibrant pink accents
+    --link-hover: #770535;
+    --border-color: #fde68a;       // Soft yellow border
+    --border-color-light: rgba(253, 230, 138, 0.5); // Warm soft amber border
+    --primary: #d97706;            // Happy Amber/Orange button
+    --secondry: #f472b6;           // Friendly pastel pink
+    --primary-hover: #b45309;
+}
+
+// 4. Focus Theme (Minimalist Cyberpunk / Pro Programmer Vibe)
+[data-theme="focus"] {
+    --main-background: #09090b;    // Jet Black
+    --card-background: #18181b;    // Charcoal Black
+    --font-color-main: #22c55e;    // Matrix/Hacker Green text
+    --font-color-muted: #71717a;   // Muted gray/green
+    --link-color: #10b981;         // Emerald Green
+    --link-hover: #4eeebb;
+    --border-color: #27272a;       // Very subtle dark border
+    --border-color-light: rgba(34, 197, 94, 0.2); // Low opacity matrix green border
+    --primary: #22c55e;            // Pure Green Button
+    --secondry: #a7f3d0;           // Pale mint green for accents
+    --primary-hover: #16a34a;
+}
+
+// ==========================================
+// GLOBAL BODY STYLING
+// ==========================================
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: var(--main-background);
+    color: var(--font-color-main);
+    font-family: 'Inter', sans-serif; 
+    
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease; 
+    min-height: 100vh;
+}

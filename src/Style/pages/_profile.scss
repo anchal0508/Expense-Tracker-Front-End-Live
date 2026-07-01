@@ -1,0 +1,27 @@
+.profile-page {
+
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: var(--card-background);
+
+    .hero {
+        background-color: var(--main-background);
+        width: 80%;
+        text-align: center;
+        padding: 1.25rem;
+    }
+    .personal-detail{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: left;
+        h2{
+            display: flex;
+
+            gap: 45px;
+        }
+    }
+}

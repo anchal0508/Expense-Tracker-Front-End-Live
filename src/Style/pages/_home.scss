@@ -1,0 +1,26 @@
+.home-page {
+    display: grid;
+    grid-template-columns: 800px auto;
+    background-color: var(--card-background);
+
+    .welcome-page {
+        background-color: transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+            width: 400px;
+            border-radius: 90px;
+        }
+    }
+
+    .form {
+        .change {
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+    }
+
+}

@@ -1,0 +1,18 @@
+footer {
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    gap: 25px;
+    background-color: var(--main-background);
+
+    img {
+        width: 100px;
+    }
+    .links{
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+}

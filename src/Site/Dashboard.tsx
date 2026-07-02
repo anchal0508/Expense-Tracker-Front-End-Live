@@ -193,19 +193,26 @@ const Dashboard: React.FC = () => {
         e.target.reset();
     }
 
+    const switchOpacityBody = () => {
+        if (sortOpen){
+
+        }
+            document.body.classList.add('sort-active');
+        document.body.classList.remove('sort-active');
+    }
 
     return (
         <div className="dashboard-page">
             <div className={`s-card ${sortOpen ? 's-card--sort-open' : 's-card--sort-closed'}`} >
-                <span onClick={() => setSortOpen(false)}><PanelLeftClose size={45} /></span>
+                <span onClick={() =>  setSortOpen(!sortOpen)}><PanelLeftClose size={25} /></span>
                 <h1>Sorting</h1>
             </div>
             <div className={`s-card ${filterOpen ? 's-card--filter-open' : 's-card--filter-closed'}`}>
-                <span onClick={() => setFilterOpen(false)}><PanelLeftClose size={45} /></span>
+                <span onClick={() => setFilterOpen(!filterOpen)}><PanelLeftClose size={25} /></span>
                 <h1>Filter</h1>
             </div>
             <div className={`s-card ${updateOpen ? 's-card--update-open' : 's-card--update-closed'}`}>
-                <span onClick={() => setupdateOpen(false)}><PanelLeftClose size={45} /></span>
+                <span onClick={() => setupdateOpen(!updateOpen)}><PanelLeftClose size={25} /></span>
                 <h1>Update</h1>
             </div>
 
@@ -367,7 +374,7 @@ const Dashboard: React.FC = () => {
                                 disabled={!hasPrevious}
                                 onClick={() => setFilters(p => ({
                                     ...p,
-                                   page:  p.page - 1,
+                                    page: p.page - 1,
                                     cursor: null
                                 }))}
                             >
@@ -383,76 +390,76 @@ const Dashboard: React.FC = () => {
                                 disabled={!hasNext}
                                 onClick={() => setFilters(p => ({
                                     ...p,
-                                    page:  p.page + 1,
+                                    page: p.page + 1,
                                     cursor: null
                                 }))}
                             >
-                            <StepForward />
+                                <StepForward />
 
-                        </button>
+                            </button>
+
+                        </div>
+
+
+                        {/* ---------------------- current Page / Total Page ---------------------- */}
+
 
                     </div>
-
-
-                    {/* ---------------------- current Page / Total Page ---------------------- */}
-
-
                 </div>
-            </div>
-            <div className="side-box today-exp box">
-                <h3>Todays Expenses</h3>
-                <table className="side-table-exp">
-                    <thead>
-                        <tr>
-                            <th>Expense</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div className="side-box today-exp box">
+                    <h3>Todays Expenses</h3>
+                    <table className="side-table-exp">
+                        <thead>
+                            <tr>
+                                <th>Expense</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                        {(() => {
+                            {(() => {
 
-                            const todayStr = getTodayFormatted();
+                                const todayStr = getTodayFormatted();
 
-                            const todayExpenses = expList ? expList.filter((item: any) => {
-                                return formatDate(item.date) === todayStr;
-                            }) : [];
+                                const todayExpenses = expList ? expList.filter((item: any) => {
+                                    return formatDate(item.date) === todayStr;
+                                }) : [];
 
-                            if (todayExpenses.length === 0) {
-                                return (
-                                    <tr>
-                                        <td colSpan={2} style={{ textAlign: 'center', color: 'gray' }}>
-                                            No expenses today
-                                        </td>
+                                if (todayExpenses.length === 0) {
+                                    return (
+                                        <tr>
+                                            <td colSpan={2} style={{ textAlign: 'center', color: 'gray' }}>
+                                                No expenses today
+                                            </td>
+                                        </tr>
+                                    );
+                                }
+
+                                return todayExpenses.map((item: any, index: number) => (
+                                    <tr key={index}>
+                                        <td>{item.expOn || item.expenseOn}</td>
+                                        <td>₹{item.amound || item.amount}</td>
                                     </tr>
-                                );
-                            }
-
-                            return todayExpenses.map((item: any, index: number) => (
-                                <tr key={index}>
-                                    <td>{item.expOn || item.expenseOn}</td>
-                                    <td>₹{item.amound || item.amount}</td>
-                                </tr>
-                            ));
-                        })()}
+                                ));
+                            })()}
 
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+                <div className="side-box box"><h3>Monthly Income</h3><p>Rs.: </p></div>
+                <div className="side-box box"><Crown className="premium-icon" size={16} /> <h3>Graph</h3></div>
+
+
+                <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>Previous Month</h3><p>Rs.: </p></div>
+                <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>Last Year</h3><p>Rs.: </p></div>
+                <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>Upcomming</h3><p>Rs.: </p></div>
+                <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>OverAll</h3><p>Rs.: </p></div>
+                <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>Money Saved in %</h3><p>Avg.: </p></div>
+
+
+
             </div>
-            <div className="side-box box"><h3>Monthly Income</h3><p>Rs.: </p></div>
-            <div className="side-box box"><Crown className="premium-icon" size={16} /> <h3>Graph</h3></div>
-
-
-            <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>Previous Month</h3><p>Rs.: </p></div>
-            <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>Last Year</h3><p>Rs.: </p></div>
-            <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>Upcomming</h3><p>Rs.: </p></div>
-            <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>OverAll</h3><p>Rs.: </p></div>
-            <div className="bt-card box"><Crown className="premium-icon" size={16} /> <h3>Money Saved in %</h3><p>Avg.: </p></div>
-
-
-
-        </div>
         </div >
     )
 }

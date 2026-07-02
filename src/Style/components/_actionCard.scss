@@ -1,11 +1,20 @@
+
+body.sort-active {
+    opacity: 0.2;
+    // Optional: Isse user baaki content par click nahi kar payega jab sort open ho
+    pointer-events: none; 
+}
 .s-card {
     position: fixed;
     width: 500px;
-    height: 500px;
+    height: 300px;
     left: -490px;
     border-radius: 50px;
     transition: all 0.5s ease-out;
     z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &--sort-closed {
         top: 25px;
@@ -13,11 +22,12 @@
         box-shadow: 0 5px 5px var(--primary);
         color: var(--main-background);
         z-index: 6;
+        opacity: 0.5;
 
         span {
-            color: var(--main-background);
+            color: var(--primary);
             position: absolute;
-            right: -18px;
+            right: -8px;
             z-index: 7;
         }
     }
@@ -26,17 +36,18 @@
         top: 25px;
         background-color: var(--font-color-muted);
         left: 0;
-        box-shadow: 0 5px 5px var(--primary);
+        box-shadow: 50px 50px 90px var(--main-background);
         z-index: 6;
+       opacity: 1;
 
         h1 {
             color: var(--main-background);
         }
 
         span {
-            color: var(--main-background);
+            color: var(--primary);
             position: absolute;
-            right: -18px;
+            right: -8px;
             z-index: 7;
         }
     }
@@ -47,11 +58,11 @@
         background-color: var(--main-background);
         color: var(--main-background);
         z-index: 8;
-
+opacity: 0.5;
         span {
-            color: var(--border-color);
+            color: var(--primary);
             position: absolute;
-            right: -18px;
+            right: -8px;
             z-index: 9;
         }
     }
@@ -60,19 +71,20 @@
         background-color: var(--card-background);
         top: 75px;
         left: 0;
-        box-shadow: 0 5px 5px var(--primary);
+        box-shadow: 50px 50px 90px var(--main-background);
         z-index: 8;
-
+opacity: 1;
         h1 {
             color: var(--font-color-main);
         }
 
 
         span {
+
+            color: var(--primary);
             position: absolute;
-            right: -18px;
+            right: -8px;
             z-index: 9;
-            color: var(--border-color);
         }
     }
 
@@ -86,11 +98,11 @@
         background-color: var(--primary);
         color: var(--main-background);
         z-index: 10;
-
+opacity: 0.5;
         span {
-            color: var(--main-background);
+            color: var(--primary);
             position: absolute;
-            right: -18px;
+            right: -8px;
             z-index: 11;
             color: var(--border-color);
         }
@@ -98,19 +110,19 @@
 
     &--update-open {
         top: 125px;
-        box-shadow: 0 5px 5px var(--primary);
+        box-shadow: 50px 50px 90px var(--main-background);
         background-color: var(--primary);
         left: 0;
         z-index: 10;
-
+opacity: 1;
         h1 {
             color: var(--main-background);
         }
 
         span {
-            color: var(--main-background);
+            color: var(--primary);
             position: absolute;
-            right: -18px;
+            right: -8px;
             z-index: 11;
             color: var(--border-color);
         }

@@ -6,17 +6,25 @@
 .side-table-exp {
     background-image: linear-gradient(45deg, rgb(145, 104, 29) 10%, rgb(218, 131, 18) 45%, rgb(95, 70, 22) 100%);
     width: 100%;
+    color: black;
 
     thead {
-        color: var(--main-background);
         padding: 10px;
         text-align: center;
         background-color: var(--font-color-main);
+
+        tr {
+            color: black;
+        }
     }
 
     tbody {
-    color: var(--border-color);            
-            text-align: center;
+        text-align: center;
+        color: black;
+
+        tr {
+            color: black;
+        }
     }
 }
 

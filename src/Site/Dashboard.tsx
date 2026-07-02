@@ -45,6 +45,9 @@ interface ApiResponse {
 
 const Dashboard: React.FC = () => {
 
+    const [premiumload, setPremiumLoad] = useState<boolean>(false);
+    const [premiumMsg, setPremiumMsg] = useState<string>('');
+
     const [hasNext, setHasNext] = useState<boolean>(true);
     const [hasPrevious, setHasPrevious] = useState<boolean>(true);
     const [totalAmount, setTotalAmount] = useState<number>(0);
@@ -83,17 +86,86 @@ const Dashboard: React.FC = () => {
             [name]: value
         }));
     }
+    const handlePayment = async () => {
+        setPremiumLoad(true);
+        setPremiumMsg('');
+
+        try {
+            const response = await API.get('/premium/gold');
+
+            console.log("Full Backend Response:", response);
+
+            if (!response || !response.data) {
+                throw new Error("No data received from backend server");
+            }
+
+            const { order, key_id } = response.data;
+
+            if (!order || !key_id) {
+                throw new Error(`Missing order or key_id from server. Order: ${order}, Key: ${key_id}`);
+            }
+
+            const options = {
+                key: key_id,
+                order_id: order.id,
+                name: "ABCROB Nexus",
+                description: "Buy Premium Membership",
+                handler: async function (razorpayResponse: any) {
+                    try {
+                        setPremiumLoad(true);
+
+                        // Debugging ke liye check karein ki Razorpay kya de raha hai
+                        console.log("Razorpay Response from gateway:", razorpayResponse);
+
+                        // FIXED: Teeno parameters ko sahi namon se backend ko bhejein
+                        const updateRes = await API.post('/premium/update', { // URL path check kar lein, relative path '../' ki jagah absolute '/' sahi rehta hai
+                            razorpay_order_id: razorpayResponse.razorpay_order_id,
+                            razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+                            razorpay_signature: razorpayResponse.razorpay_signature // Ye sabse zaroori tha!
+                        });
+
+                        setPremiumMsg(updateRes.data.message || "Premium activated successfully!");
+                    } catch (err: any) {
+                        console.error("Backend update error details:", err);
+                        setPremiumMsg(err.response?.data?.message || "Failed to update payment status.");
+                    } finally {
+                        setPremiumLoad(false);
+                    }
+                },
+                theme: {
+                    color: "#2563eb"
+                },
+                modal: {
+                    ondismiss: function () {
+                        setPremiumLoad(false);
+                        setPremiumMsg("Payment cancelled by user.");
+                    }
+                }
+            };
+
+            if (typeof (window as any).Razorpay === 'undefined') {
+                throw new Error("Razorpay SDK not loaded. Did you forget to add the script tag in index.html?");
+            }
+
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
+
+        } catch (error: any) {
+            console.error("Exact FrontEnd Error Catch:", error);
+            setPremiumMsg(error.message || error.response?.data?.message || "Something went wrong while creating order.");
+            setPremiumLoad(false);
+        }
+    };
 
 
-
-useEffect(() => {
-    if (paginatedList && paginatedList.length > 0) {
-        const lastItem = paginatedList[paginatedList.length - 1];
-        setTotalAmount(lastItem.totalAmount);
-    } else {
-        setTotalAmount(0); 
-    }
-}, [paginatedList]);
+    useEffect(() => {
+        if (paginatedList && paginatedList.length > 0) {
+            const lastItem = paginatedList[paginatedList.length - 1];
+            setTotalAmount(lastItem.totalAmount);
+        } else {
+            setTotalAmount(0);
+        }
+    }, [paginatedList]);
 
 
     const fetchExpenses = async () => {
@@ -199,12 +271,12 @@ useEffect(() => {
         setLoading(false);
         e.target.reset();
     }
- 
+
 
     return (
         <div className="dashboard-page">
             <div className={`s-card ${sortOpen ? 's-card--sort-open' : 's-card--sort-closed'}`} >
-                <span onClick={() =>  setSortOpen(!sortOpen)}><PanelLeftClose size={25} /></span>
+                <span onClick={() => setSortOpen(!sortOpen)}><PanelLeftClose size={25} /></span>
                 <h1>Sorting</h1>
             </div>
             <div className={`s-card ${filterOpen ? 's-card--filter-open' : 's-card--filter-closed'}`}>
@@ -316,7 +388,11 @@ useEffect(() => {
 
 
                     <div className="action-btn ">
-                        <button className="gold-btn"><Crown size={16} /> . Data Analysis</button>
+                        <button onClick={handlePayment} className="gold-btn">
+                            {premiumload ? (<Loader />) : (<span><Crown size={16} /> . Data Analysis</span>)}
+
+
+                        </button><span>{premiumMsg}</span>
                         <button className="btn btn--primary" onClick={() => setupdateOpen(true)}>Update</button>
                         <button className="btn btn--primary">Delete</button>
                         <button className="btn btn--secondry"><Crown size={16} />  .View Full Screen</button>
@@ -359,10 +435,10 @@ useEffect(() => {
                                             <td style={{ color: item.income > 0 ? 'green' : 'inherit' }}>{item.income}</td>
                                             <td style={{ color: item.amount > 0 ? 'red' : 'inherit' }}>{item.amount}</td>
                                             <td><strong>{item.totalAmount}</strong></td>
-                                            
+
                                         </tr>
                                     ))
-                                    
+
                                 )}
                             </tbody>
                         </table>

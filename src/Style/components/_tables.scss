@@ -43,16 +43,17 @@
 .main-exp-table {
     width: 100%;
     min-height: 200px;
+    text-transform: capitalize;
 
     thead {
         padding: 10px;
         text-align: center;
-
+        text-transform: capitalize;
     }
 
     tbody {
         padding: 10px;
         text-align: center;
-
+        text-transform: capitalize;
     }
 }

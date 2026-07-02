@@ -192,14 +192,7 @@ const Dashboard: React.FC = () => {
         setLoading(false);
         e.target.reset();
     }
-
-    const switchOpacityBody = () => {
-        if (sortOpen){
-
-        }
-            document.body.classList.add('sort-active');
-        document.body.classList.remove('sort-active');
-    }
+ 
 
     return (
         <div className="dashboard-page">

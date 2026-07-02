@@ -86,7 +86,14 @@ const Dashboard: React.FC = () => {
 
 
 
-
+useEffect(() => {
+    if (paginatedList && paginatedList.length > 0) {
+        const lastItem = paginatedList[paginatedList.length - 1];
+        setTotalAmount(lastItem.totalAmount);
+    } else {
+        setTotalAmount(0); 
+    }
+}, [paginatedList]);
 
 
     const fetchExpenses = async () => {
@@ -352,8 +359,10 @@ const Dashboard: React.FC = () => {
                                             <td style={{ color: item.income > 0 ? 'green' : 'inherit' }}>{item.income}</td>
                                             <td style={{ color: item.amount > 0 ? 'red' : 'inherit' }}>{item.amount}</td>
                                             <td><strong>{item.totalAmount}</strong></td>
+                                            
                                         </tr>
                                     ))
+                                    
                                 )}
                             </tbody>
                         </table>

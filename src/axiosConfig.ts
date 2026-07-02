@@ -4,8 +4,8 @@ import axios from "axios";
 
 const API = axios.create({
     withCredentials: true,
-    // baseURL: 'http://localhost:3000/api',
-    baseURL: 'https://expense-tracker-live-back-end-1.onrender.com/api',
+    baseURL: 'http://localhost:3000/api',
+    // baseURL: 'https://expense-tracker-live-back-end-1.onrender.com/api',
     headers: {
         'Content-Type': 'application/json'
     }

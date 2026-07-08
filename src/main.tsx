@@ -8,6 +8,7 @@ import Dashboard from './Site/Dashboard.tsx'
 import Profile from './Site/Profile.tsx'
 import ProtectedRoutes from './ProtectedRoutes.tsx';
 import { AuthProvider } from './AuthContext.tsx';
+import GuestRoutes from './GuestRoutes.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -15,7 +16,13 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <Routes>
           <Route element={<App />}>
-            <Route path='/' element={<Home />} />
+            
+
+            <Route element={<GuestRoutes />}>
+              <Route path='/' element={<Home />} />
+              
+            </Route>
+
 
             {/* ------------------------------------------------------- Protected Routes Sectction ------------------------------------------------------- */}
 

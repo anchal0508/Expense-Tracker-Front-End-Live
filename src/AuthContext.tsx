@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import API from './axiosConfig';
+import { useNavigate, useNavigation } from 'react-router-dom';
 
 interface User {
     id: string;
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    
 
     useEffect(() => {
         const checkLoggedInUser = async () => {
@@ -48,6 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         checkLoggedInUser();
     }, []); 
 
+   
     const login = (userData: User) => {
         setUser(userData);
     };

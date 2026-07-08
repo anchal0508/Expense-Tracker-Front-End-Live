@@ -2,7 +2,14 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-
+    
+    // position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99 !important;  
+    background-color: var(--main-background);  
+    height: 70px;  
 
     .logo-img {
         display: inline-block;
@@ -13,7 +20,21 @@
         }
     }
 
+    .tabs {
+        display: flex;
+        gap: 20px;
+        z-index: 10000;  
 
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.2s ease;
+            
+            &:hover {
+                color: var(--primary);  
+            }
+        }
+    }
 
     .action {
         display: flex;
@@ -36,29 +57,28 @@
                 border: 1px solid var(--border-color);
                 border-radius: 50px;
                 transform: translateX(0);
-                box-shadow: -45px 0  5px var(--border-color);
+                box-shadow: -5px 0 10px var(--border-color); 
             }
-            
-            &:active {
-                transform: translateX(-45px);
-                box-shadow: 45px 0  5px var(--border-color);
 
+            &:active {
+                transform: translateX(-15px);  
+                box-shadow: 15px 0 5px var(--border-color);
             }
 
             span {
                 text-transform: capitalize;
             }
-
         }
 
         .logout-link {
             cursor: pointer;
+            background: none;
+            border: none;
+            color: inherit;
 
             &:active {
                 transform: translateY(0);
             }
         }
-
     }
-
 }

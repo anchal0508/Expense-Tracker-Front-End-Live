@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, replace, useNavigate } from "react-router-dom";
 import logoImg from '../../Images/logo.png';
 import { useEffect, useState } from "react";
 import { useAuth } from "../../AuthContext";
@@ -14,10 +14,11 @@ const Navbar: React.FC = () => {
         document.documentElement.setAttribute('data-theme', themes[currentIdx]);
     }, [currentIdx]);
 
+ 
+
     const handleChangeTheme = () => {
         setCurrentIdx((prevIdx) => (prevIdx + 1) % themes.length);
     }
-
 
     const handleLogout = async () => {
         await logout();

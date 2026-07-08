@@ -8,4 +8,9 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  build: {
+    modulePreload: {
+      polyfill: false,  
+    }
+  }
 })

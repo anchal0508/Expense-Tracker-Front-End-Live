@@ -113,7 +113,9 @@ const ExpenseForm = () => {
                             id="income"
                             onChange={handleChange}
                             value={expForm.income}
-                            required
+                            placeholder="    : Default will be 0"
+                            defaultValue={0}
+                            
                         />
                     </div>
                 </div>

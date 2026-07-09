@@ -14,6 +14,7 @@ export interface ExpenseItem {
 interface ExpenseContextType {
     expenses: ExpenseItem[];
     loading: boolean;
+    delLoading: boolean;
     groupData: string;
     limit: number;
     page: number;
@@ -33,6 +34,10 @@ interface ExpenseContextType {
     fetchExpenses: () => Promise<void>;
     addExpense: (formData: any) => Promise<boolean>;
     downloadCSV: () => Promise<void>;
+    deleteExpense: (expenseId: any) => void;
+    editingExpense: ExpenseItem | null;
+    setEditingExpense: React.Dispatch<React.SetStateAction<ExpenseItem | null>>;
+    updateExpense: (id: number, updateData: any) => Promise<boolean>;
 
     isPremiumModalOpen: boolean;
     setIsPremiumModalOpen: (val: boolean) => void;
@@ -69,6 +74,10 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
     const [premiumMsg, setPremiumMsg] = useState<string>("");
 
     const [totalAmount, setTotalAmount] = useState<number>(0);
+
+
+    const [delLoading, setDelLoading] = useState<boolean>(false);
+    const [editingExpense, setEditingExpense] = useState<ExpenseItem | null>(null);
 
     const handlePayment = async () => {
         setPremiumLoad(true);
@@ -139,6 +148,34 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
         }
     };
 
+    const deleteExpense = async (expenseId: any) => {
+        setDelLoading(true);
+        try {
+            const response = await API.delete(`/expenses/delete/${expenseId}`);
+            console.log('expense deleted: ', response);
+            return response;
+        } catch (error: any) {
+            console.error("Error inside hook while deleting expense:", error.message);
+        } finally {
+            setDelLoading(false);
+        }
+    }
+
+    const updateExpense = async (id: number, updatedData: any) => {
+        try {
+            const response = await API.put(`/expenses/update/${id}`, updatedData); // Backend update API route context linked
+            if (response.status === 200 || response.data?.success) {
+                await fetchExpenses(); // Edit hote hi main data list refresh karein ✨
+                return true;
+            }
+            return false;
+        } catch (error: any) {
+            console.error("Editing expense failed on server engine:", error.message);
+            return false;
+        }
+    };
+
+
     const downloadCSV = async () => {
         try {
             const params: Record<string, string> = {};
@@ -174,12 +211,13 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
 
     useEffect(() => {
         fetchExpenses();
-    }, [groupData, limit, page, startDate, endDate]);
+    }, [groupData, limit, page, startDate, endDate, delLoading]);
 
     return (
         <ExpenseContext.Provider value={{
             expenses,
             loading,
+            delLoading,
             groupData,
             limit,
             page,
@@ -194,6 +232,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
             setLimit: (val) => setLimit(val as number),
             setPage: (val) => setPage(val as number),
             setSearchQuery: (val) => setSearchQuery(val as string),
+            deleteExpense,
             fetchExpenses,
             addExpense,
             downloadCSV,
@@ -204,7 +243,10 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
             setPremiumLoad,
             premiumMsg,
             setPremiumMsg,
-            totalAmount
+            totalAmount,
+            editingExpense,
+            setEditingExpense,
+            updateExpense
         }}>
             {children}
         </ExpenseContext.Provider>

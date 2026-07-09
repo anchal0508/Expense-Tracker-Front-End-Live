@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Loader, Search, SquareX } from "lucide-react";
 import { useExpenses } from "../hooks/useExpenses";
 
@@ -14,14 +14,18 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
         searchQuery,
         setSearchQuery,
         setPage,
-        startDate,     
-        endDate,       
-        setStartDate,  
-        setEndDate     
+        startDate,
+        endDate,
+        setStartDate,
+        setEndDate,
+        editingExpense,
+        setEditingExpense,
+        updateExpense
+
     } = useExpenses();
 
-    const [formLoading] = useState<boolean>(false);
-    const [message] = useState<string>("");
+     const [formLoading, setFormLoading] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>("");
 
     const [expForm, setExpForm] = useState({
         expenseOn: '',
@@ -31,6 +35,18 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
         income: 0
     });
 
+    useEffect(() => {
+        if (editingExpense) {
+            setExpForm({
+                expenseOn: editingExpense.expenseOn || '',
+                description: editingExpense.description || '',
+                amount: editingExpense.amount || 0,
+                date: editingExpense.date ? editingExpense.date.substring(0, 10) : '',
+                income: editingExpense.income || 0
+            });
+        }
+    }, [editingExpense]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setExpForm(prev => ({ ...prev, [name]: value }));
@@ -38,12 +54,36 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
 
     const handleSelectedData = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setGroupData(e.target.value);
-        setPage(1); 
+        setPage(1);
     };
 
-    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleFormSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("Submitting updated form data context layer:", expForm);
+        if (!editingExpense?.id) return;
+
+        setFormLoading(true);
+        setMessage("");
+
+        // Triggering update process endpoint pipeline
+        const success = await updateExpense(editingExpense.id, {
+            expenseOn: expForm.expenseOn,
+            description: expForm.description,
+            amount: Number(expForm.amount) || 0,
+            date: expForm.date,
+            income: Number(expForm.income) || 0
+        });
+
+        if (success) {
+            setMessage("Expense updated successfully!");
+            setEditingExpense(null); 
+            setTimeout(() => {
+                setUpdateOpen(false);
+                setMessage("");
+            }, 1000); 
+        } else {
+            setMessage("Failed to update execution parameters.");
+        }
+        setFormLoading(false);
     };
 
     return (
@@ -53,7 +93,7 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
                 <span onClick={() => setUpdateOpen(!updateOpen)} style={{ cursor: 'pointer' }}>
                     <SquareX size={25} />
                 </span>
-                
+
                 <div className="update-card">
                     <form className="update-form" onSubmit={handleFormSubmit}>
                         <h2 className="card-header">Edit Expense</h2>
@@ -129,14 +169,14 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
 
             {/* Combined Filters Panel Section */}
             <div className="filter-section" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                
+
                 <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
                     {/*  Grouped Data Dropdown Selector */}
-                    <select 
-                        name="groupData" 
-                        id="groupData" 
-                        className="btn btn--secondry" 
-                        value={groupData} 
+                    <select
+                        name="groupData"
+                        id="groupData"
+                        className="btn btn--secondry"
+                        value={groupData}
                         onChange={handleSelectedData}
                     >
                         <option value="all">All</option>
@@ -147,25 +187,25 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
 
                     {/* Live Date Range Filter Layer Elements (Only active in "all" view) */}
                     <div className="date-range-block" style={{ display: 'flex', gap: '10px', alignItems: 'center', opacity: groupData === 'all' ? 1 : 0.5 }}>
-                        <input 
-                            type="date" 
+                        <input
+                            type="date"
                             className="btn btn--secondry"
-                            value={startDate} 
+                            value={startDate}
                             disabled={groupData !== 'all'}
-                            onChange={(e) => { setStartDate(e.target.value); setPage(1); }} 
+                            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
                         />
                         <span style={{ fontSize: '14px', color: 'gray' }}>To</span>
-                        <input 
-                            type="date" 
+                        <input
+                            type="date"
                             className="btn btn--secondry"
-                            value={endDate} 
+                            value={endDate}
                             disabled={groupData !== 'all'}
-                            onChange={(e) => { setEndDate(e.target.value); setPage(1); }} 
+                            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
                         />
                         {/* Option to quickly reset active date boundaries filter blocks */}
                         {(startDate || endDate) && (
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 style={{ background: 'none', border: 'none', color: 'red', cursor: 'pointer', fontSize: '12px' }}
                                 onClick={() => { setStartDate(''); setEndDate(''); setPage(1); }}
                             >
@@ -176,14 +216,14 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
                 </div>
 
                 <div className="search-block" style={{ opacity: groupData === 'all' ? 1 : 0.5 }}>
-                    <input 
-                        type="search" 
-                        name="search" 
-                        id="search" 
+                    <input
+                        type="search"
+                        name="search"
+                        id="search"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         disabled={groupData !== 'all'}
-                        placeholder={groupData === 'all' ? "    : Type your Expense Category" : "    : Search disabled in grouped view"} 
+                        placeholder={groupData === 'all' ? "    : Type your Expense Category" : "    : Search disabled in grouped view"}
                     />
                     <Search size={18} />
                 </div>

@@ -15,19 +15,23 @@ const ExpenseTable = () => {
         setLimit,
         setPage,
         downloadCSV,
-        setIsPremiumModalOpen, 
-        premiumLoad,           
-        premiumMsg             
+        setIsPremiumModalOpen,
+        premiumLoad,
+        premiumMsg,
+        deleteExpense,
+        setEditingExpense
+
     } = useExpenses();
 
-    // 2. Sirf strict local variables declaration rakhein (Saari duplicate local premium states delete kar di hain) 👍
     const [updateOpen, setUpdateOpen] = useState<boolean>(false);
+    const [updateLoad, setUpdateLoad] = useState<boolean>(false);
     const [delLoading, setDelLoading] = useState<boolean>(false);
     const [acitveDelete, setActiveDelete] = useState<number | string | null>(null);
 
-    const deleteExpense = async (id: any) => {
+    const deleting = async (id: any) => {
         setDelLoading(true);
         try {
+            await deleteExpense(id);
             console.log("Deleting id:", id);
         } catch (error) {
             console.error("Delete handler error: ", error);
@@ -35,14 +39,15 @@ const ExpenseTable = () => {
             setDelLoading(false);
         }
     };
+
+     
     return (
-         <div className="table-container box">
-            {/* ✅ FIXED: PopupCards ko khulne ke liye iska open/close controller state milna zaroori hai */}
+        <div className="table-container box">
             <PopupCards updateOpen={updateOpen} setUpdateOpen={setUpdateOpen} />
-            
+
             <div className="action-btn">
-                <button 
-                    onClick={() => setIsPremiumModalOpen(true)} 
+                <button
+                    onClick={() => setIsPremiumModalOpen(true)}
                     className="gold-btn"
                     disabled={premiumLoad}
                 >
@@ -52,7 +57,7 @@ const ExpenseTable = () => {
                         <span><Crown size={16} /> . Buy Premium</span>
                     )}
                 </button>
-                
+
                 {premiumMsg && (
                     <span style={{ marginLeft: "10px", color: "gold", fontSize: "14px" }}>
                         {premiumMsg}
@@ -66,9 +71,9 @@ const ExpenseTable = () => {
                             alert("Download karne ke liye koi data nahi hai!");
                             return;
                         }
-                        await downloadCSV(); 
+                        await downloadCSV();
                     }}
-                    disabled={loading} 
+                    disabled={loading}
                 >
                     Download _<FileDown size={16} />
                 </button>
@@ -121,14 +126,18 @@ const ExpenseTable = () => {
                                     <td style={{ color: item.amount > 0 ? 'red' : 'inherit' }}>{item.amount}</td>
                                     <td><strong>{item.totalAmount !== undefined ? item.totalAmount : 'N/A'}</strong></td>
 
-                                    {/* ✅ FIXED: Edit click hone par updateOpen ko TRUE set kar diya */}
                                     {groupData === 'all' && (
-                                        <td className="action-cell" onClick={() => setUpdateOpen(true)} style={{ cursor: "pointer" }}>
+                                        <td className="action-cell" onClick={async () => {
+                                            setUpdateOpen(true);
+                                            setEditingExpense(item);
+                                        }}
+                                            style={{ cursor: "pointer" }}>
+
                                             <SquarePen color="orange" size={20} />
+
                                         </td>
                                     )}
-                                    
-                                    {/* ✅ FIXED: Delete action click execution logic mapped safely */}
+
                                     {groupData === 'all' && (
                                         <td className="action-cell">
                                             {delLoading && acitveDelete === item.id ? (
@@ -136,7 +145,7 @@ const ExpenseTable = () => {
                                             ) : (
                                                 <button className="delete-btn transparent-btn" onClick={async () => {
                                                     setActiveDelete(item.id || null);
-                                                    await deleteExpense(item.id);
+                                                    await deleting(item.id);
                                                     setActiveDelete(null);
                                                 }}>
                                                     <Trash2 color="red" size={20} />

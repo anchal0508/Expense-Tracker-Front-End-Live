@@ -1,13 +1,8 @@
-import { useEffect } from "react";
-import useExpenses from "../hooks/useExpenses";
 import { formatDate, getTodayFormatted } from "../types/DateFormates";
+import { useExpenses } from "../hooks/useExpenses";
 
 const TodaysTable = () => {
-    const { expList ,fetchExpenses} = useExpenses();
-
-    useEffect(()=>{
-        fetchExpenses(10);
-    },[] )
+    const { expenses } = useExpenses();
 
 
     return (
@@ -21,12 +16,10 @@ const TodaysTable = () => {
                     </tr>
                 </thead>
                 <tbody>
-
                     {(() => {
-
                         const todayStr = getTodayFormatted();
 
-                        const todayExpenses = expList ? expList.filter((item: any) => {
+                        const todayExpenses = expenses ? expenses.filter((item: any) => {
                             return formatDate(item.date) === todayStr;
                         }) : [];
 
@@ -42,17 +35,15 @@ const TodaysTable = () => {
 
                         return todayExpenses.map((item: any, index: number) => (
                             <tr key={index}>
-                                <td>{item.expOn || item.expenseOn}</td>
-                                <td>₹{item.amound || item.amount}</td>
+                                <td>{item.expenseOn || item.expOn}</td>
+                                <td style={{ color: 'red' }}>₹{item.amount || item.amound}</td>
                             </tr>
                         ));
                     })()}
-
-
                 </tbody>
             </table>
         </div>
-    )
-}
+    );
+};
 
 export default TodaysTable;

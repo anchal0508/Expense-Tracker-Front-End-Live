@@ -1,0 +1,218 @@
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import API from '../../axiosConfig';
+
+export interface ExpenseItem {
+    id?: number;
+    date: string;
+    expenseOn: string;
+    description: string;
+    income: number;
+    amount: number;
+    totalAmount?: number;
+}
+
+interface ExpenseContextType {
+    expenses: ExpenseItem[];
+    loading: boolean;
+    groupData: string;
+    limit: number;
+    page: number;
+    totalPages: number;
+    totalAmount: number;
+    currentPage: number;
+    searchQuery: string;
+    startDate: string;
+    endDate: string;
+    setStartDate: (val: string) => void;
+    setEndDate: (val: string) => void;
+
+    setGroupData: (val: string) => void;
+    setLimit: (val: number) => void;
+    setPage: (val: number) => void;
+    setSearchQuery: (val: string) => void;
+    fetchExpenses: () => Promise<void>;
+    addExpense: (formData: any) => Promise<boolean>;
+    downloadCSV: () => Promise<void>;
+
+    isPremiumModalOpen: boolean;
+    setIsPremiumModalOpen: (val: boolean) => void;
+    premiumLoad: boolean;
+    premiumMsg: string;
+    handlePayment: () => Promise<void>;
+    setPremiumLoad: React.Dispatch<React.SetStateAction<boolean>>;
+    setPremiumMsg: React.Dispatch<React.SetStateAction<string>>;
+}
+
+interface ExpenseProviderProps {
+    children: React.ReactNode;
+
+}
+
+const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
+
+export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) => {
+    const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const [groupData, setGroupData] = useState<string>('all');
+    const [limit, setLimit] = useState<number>(5);
+    const [page, setPage] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+
+    const [startDate, setStartDate] = useState<string>('');
+    const [endDate, setEndDate] = useState<string>('');
+
+    const [isPremiumModalOpen, setIsPremiumModalOpen] = useState<boolean>(false);
+    const [premiumLoad, setPremiumLoad] = useState<boolean>(false);
+    const [premiumMsg, setPremiumMsg] = useState<string>("");
+
+    const [totalAmount, setTotalAmount] = useState<number>(0);
+
+    const handlePayment = async () => {
+        setPremiumLoad(true);
+        setPremiumMsg("");
+        try {
+            const response = await API.post("/api/premium/update"); // Backend check logic route
+            if (response.data?.success) {
+                setPremiumMsg("Premium Activated Successfully! 🚀");
+                setTimeout(() => setIsPremiumModalOpen(false), 1500); // Success hone par auto-close
+            }
+        } catch (error: any) {
+            setPremiumMsg("Payment failed or cancelled.");
+        } finally {
+            setPremiumLoad(false);
+        }
+    };
+
+    const fetchExpenses = async () => {
+        setLoading(true);
+        try {
+            const params: Record<string, string> = {
+                page: page.toString(),
+                limit: limit.toString(),
+                groupData: groupData
+            };
+
+            if (groupData === 'all' && searchQuery.trim() !== '') {
+                params.search = searchQuery;
+            }
+
+            if (startDate && endDate) {
+                params.startDate = startDate;
+                params.endDate = endDate;
+            }
+
+            const queryParams = new URLSearchParams(params).toString();
+            const response = await API.get(`/expenses/allExp?${queryParams}`);
+
+            if (response.data?.success) {
+                setExpenses(response.data.expenses);
+                setTotalPages(response.data.totalPages || 1);
+                setCurrentPage(response.data.currentPage || 1);
+                setTotalAmount(response.data.totalAmount || 0);
+            }
+        } catch (error: any) {
+            console.error("Fetching expenses failed:", error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const addExpense = async (formData: any) => {
+        try {
+            const response = await API.post('/expenses/addExp', formData);
+            if (response.status === 201) {
+                setGroupData('all');
+                setSearchQuery('');
+                setStartDate('');
+                setEndDate('');
+                setPage(1);
+                await fetchExpenses();
+                return true;
+            }
+            return false;
+        } catch (error: any) {
+            console.error("Adding expense failed:", error.message);
+            return false;
+        }
+    };
+
+    const downloadCSV = async () => {
+        try {
+            const params: Record<string, string> = {};
+
+            if (startDate && endDate) {
+                params.startDate = startDate;
+                params.endDate = endDate;
+            }
+
+            const queryParams = new URLSearchParams(params).toString();
+
+            const response = await API.get(`/expenses/download?${queryParams}`, {
+                responseType: 'blob'
+            });
+
+            const blob = new Blob([response.data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+
+            link.setAttribute('download', `Expenses_Report_${startDate || 'All'}_to_${endDate || 'All'}.csv`);
+            document.body.appendChild(link);
+
+            link.click();
+
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error: any) {
+            console.error("CSV Download Failed Frontend Error:", error.message);
+            alert("Download failed! Ek baar console check kijiye.");
+        }
+    };
+
+    useEffect(() => {
+        fetchExpenses();
+    }, [groupData, limit, page, startDate, endDate]);
+
+    return (
+        <ExpenseContext.Provider value={{
+            expenses,
+            loading,
+            groupData,
+            limit,
+            page,
+            totalPages,
+            currentPage,
+            searchQuery,
+            startDate,
+            endDate,
+            setStartDate: (val) => setStartDate(val as string),
+            setEndDate: (val) => setEndDate(val as string),
+            setGroupData: (val) => setGroupData(val as string),
+            setLimit: (val) => setLimit(val as number),
+            setPage: (val) => setPage(val as number),
+            setSearchQuery: (val) => setSearchQuery(val as string),
+            fetchExpenses,
+            addExpense,
+            downloadCSV,
+            handlePayment,
+            isPremiumModalOpen,
+            setIsPremiumModalOpen,
+            premiumLoad,
+            setPremiumLoad,
+            premiumMsg,
+            setPremiumMsg,
+            totalAmount
+        }}>
+            {children}
+        </ExpenseContext.Provider>
+    );
+};
+
+export const useExpenses = () => {
+    const context = useContext(ExpenseContext);
+    if (!context) throw new Error("useExpenses must be used within an ExpenseProvider");
+    return context;
+};

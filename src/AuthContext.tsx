@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import API from './axiosConfig';
-import { useNavigate, useNavigation } from 'react-router-dom';
 
 interface User {
     id: string;

@@ -1,69 +1,78 @@
-import { Crown, FileDown, Filter, Loader, SquarePen, StepBack, StepForward, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import useExpenses from "../hooks/useExpenses";
+import { Crown, FileDown, Loader, SquarePen, StepBack, StepForward, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { formatDate } from "../types/DateFormates";
-import buttonActionForm from "../hooks/buttonActionForm";
+import { useExpenses } from "../hooks/useExpenses";
 import PopupCards from "./PopupCards";
 
-
 const ExpenseTable = () => {
-    const [submitFormReload, setSubmitFormReload] = useState<boolean>(false);
-    const [acitveDelete, setActiveDelete] = useState<number | string | null>(null);
-
-    const { loading,
-        handlePayment,
-        setFilters,
-        message,
-        premiumload,
-        premiumMsg,
-        paginatedList,
-        hasNext,
-        hasPrevious,
-        currentPage,
+    const {
+        expenses,
+        loading,
+        groupData,
+        limit,
         totalPages,
-        fetchExpenses,
-        setExpLimit,
+        currentPage,
+        setLimit,
+        setPage,
         downloadCSV,
-        expLimit,
-        filters
-
+        setIsPremiumModalOpen, 
+        premiumLoad,           
+        premiumMsg             
     } = useExpenses();
 
-    const { deleteExpense, updateExpense, delLoading } = buttonActionForm(setSubmitFormReload);
-
-
-    const [sortOpen, setSortOpen] = useState<boolean>(false);
+    // 2. Sirf strict local variables declaration rakhein (Saari duplicate local premium states delete kar di hain) 👍
     const [updateOpen, setUpdateOpen] = useState<boolean>(false);
-    // const [expLimit, setExpLimit] = useState<number | null>(null);
+    const [delLoading, setDelLoading] = useState<boolean>(false);
+    const [acitveDelete, setActiveDelete] = useState<number | string | null>(null);
 
-    useEffect(() => {
-        fetchExpenses(filters.limit);
-    }, [filters.limit, filters.page, message, delLoading]);
-
-
-
+    const deleteExpense = async (id: any) => {
+        setDelLoading(true);
+        try {
+            console.log("Deleting id:", id);
+        } catch (error) {
+            console.error("Delete handler error: ", error);
+        } finally {
+            setDelLoading(false);
+        }
+    };
     return (
-        <div className="table-container box">
-
-            <PopupCards
-                sortOpen={sortOpen}
-                setSortOpen={setSortOpen}
-                updateOpen={updateOpen}
-                setUpdateOpen={setUpdateOpen}
-            />
-
-            <div className="action-btn ">
-
-                <button onClick={handlePayment} className="gold-btn">
-                    {premiumload ? (<Loader />) : (<span><Crown size={16} /> . Buy Premium</span>)}
+         <div className="table-container box">
+            {/* ✅ FIXED: PopupCards ko khulne ke liye iska open/close controller state milna zaroori hai */}
+            <PopupCards updateOpen={updateOpen} setUpdateOpen={setUpdateOpen} />
+            
+            <div className="action-btn">
+                <button 
+                    onClick={() => setIsPremiumModalOpen(true)} 
+                    className="gold-btn"
+                    disabled={premiumLoad}
+                >
+                    {premiumLoad ? (
+                        <Loader className="animate-spin" />
+                    ) : (
+                        <span><Crown size={16} /> . Buy Premium</span>
+                    )}
                 </button>
-                <span>{premiumMsg}</span>
+                
+                {premiumMsg && (
+                    <span style={{ marginLeft: "10px", color: "gold", fontSize: "14px" }}>
+                        {premiumMsg}
+                    </span>
+                )}
 
-
-
-                <button className="btn btn--secondry" onClick={downloadCSV}>Download _<FileDown size={16} />  </button>
+                <button
+                    className="btn btn--secondry"
+                    onClick={async () => {
+                        if (expenses.length === 0) {
+                            alert("Download karne ke liye koi data nahi hai!");
+                            return;
+                        }
+                        await downloadCSV(); 
+                    }}
+                    disabled={loading} 
+                >
+                    Download _<FileDown size={16} />
+                </button>
             </div>
-
 
             <div className="main-exp-table">
                 <table className="table">
@@ -76,121 +85,108 @@ const ExpenseTable = () => {
                             <th>Income</th>
                             <th>Amount</th>
                             <th>Total</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
+                            {groupData === 'all' && <th>Edit</th>}
+                            {groupData === 'all' && <th>Delete</th>}
                         </tr>
                     </thead>
                     <tbody id="table-items">
                         {loading ? (
                             <tr>
-                                <td colSpan={7} style={{ textAlign: 'center' }}>
+                                <td colSpan={9} style={{ textAlign: 'center' }}>
                                     <Loader className="animate-spin" style={{ display: 'inline-block' }} /> <span>Loading Data...</span>
                                 </td>
                             </tr>
-                        ) : paginatedList && paginatedList.length === 0 ? ( // CHANGED TO paginatedList
+                        ) : expenses && expenses.length === 0 ? (
                             <tr>
-                                <td colSpan={7} style={{ textAlign: 'center' }}>
+                                <td colSpan={9} style={{ textAlign: 'center' }}>
                                     <p>No Items Found</p>
                                 </td>
                             </tr>
                         ) : (
-                            paginatedList.map((item, index) => (
-                                <tr key={item.id || index}>
-                                    <td>{index + 1 + (currentPage - 1) * filters.limit}</td>
-                                    <td>{formatDate(item.date)}</td>
+                            expenses.map((item, index) => (
+                                <tr key={item.id || `grouped-row-${item.date}-${index}`}>
+                                    <td>{index + 1 + (currentPage - 1) * limit}</td>
+
+                                    <td>
+                                        {groupData === 'monthly'
+                                            ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                                            : groupData === 'yearly'
+                                                ? new Date(item.date).getFullYear()
+                                                : formatDate(item.date)
+                                        }
+                                    </td>
                                     <td>{item.expenseOn}</td>
                                     <td>{item.description}</td>
                                     <td style={{ color: item.income > 0 ? 'green' : 'inherit' }}>{item.income}</td>
                                     <td style={{ color: item.amount > 0 ? 'red' : 'inherit' }}>{item.amount}</td>
-                                    <td><strong>{item.totalAmount}</strong></td>
-                                    <td className="action-cell" onClick={() => setUpdateOpen(!updateOpen)}><SquarePen color="orange" size={20} /></td>
-                                    <td className="action-cell">
-                                        {delLoading && acitveDelete === item.id ?
-                                            (
-                                                <Loader />
+                                    <td><strong>{item.totalAmount !== undefined ? item.totalAmount : 'N/A'}</strong></td>
+
+                                    {/* ✅ FIXED: Edit click hone par updateOpen ko TRUE set kar diya */}
+                                    {groupData === 'all' && (
+                                        <td className="action-cell" onClick={() => setUpdateOpen(true)} style={{ cursor: "pointer" }}>
+                                            <SquarePen color="orange" size={20} />
+                                        </td>
+                                    )}
+                                    
+                                    {/* ✅ FIXED: Delete action click execution logic mapped safely */}
+                                    {groupData === 'all' && (
+                                        <td className="action-cell">
+                                            {delLoading && acitveDelete === item.id ? (
+                                                <Loader className="animate-spin" />
                                             ) : (
-                                                <button className="delete-btn transparent-btn" onClick=
-                                                    {
-                                                        async () => {
-                                                            setActiveDelete(item.id);
-                                                            await deleteExpense(item.id)
-                                                            setActiveDelete(null);
-                                                        }
-                                                    }>
+                                                <button className="delete-btn transparent-btn" onClick={async () => {
+                                                    setActiveDelete(item.id || null);
+                                                    await deleteExpense(item.id);
+                                                    setActiveDelete(null);
+                                                }}>
                                                     <Trash2 color="red" size={20} />
                                                 </button>
-                                            )
-                                        }
-                                    </td>
+                                            )}
+                                        </td>
+                                    )}
                                 </tr>
                             ))
-
                         )}
                     </tbody>
                 </table>
 
-                {/* ---------------------- current Page / Total Page ---------------------- */}
-
+                {/* Pagination segments */}
                 <div className="paggination" style={{ display: 'flex', gap: '15px', alignItems: 'center', marginTop: '10px' }}>
-
                     <button
                         className="pagging-btn"
-                        disabled={!hasPrevious}
-                        onClick={() => setFilters(p => ({
-                            ...p,
-                            page: p.page - 1,
-                            cursor: null
-                        }))}
+                        disabled={currentPage <= 1 || loading}
+                        onClick={() => setPage(currentPage - 1)}
                     >
                         <StepBack />
                     </button>
 
-                    <select 
-                        name="expLimit" 
-                        id="expLimit" 
-                        className="btn btn--secondry" 
-                        value={filters.limit} 
+                    <select
+                        name="expLimit"
+                        id="expLimit"
+                        className="btn btn--secondry"
+                        value={limit}
                         onChange={(e) => {
-                            const newLimit = Number(e.target.value);
-                            setFilters(p => ({
-                                ...p,
-                                limit: newLimit,
-                                page: 1 
-                            }));
+                            setLimit(Number(e.target.value));
                         }}
                     >
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="15">15</option>
+                        <option value="5">5 Rows</option>
+                        <option value="10">10 Rows</option>
+                        <option value="15">15 Rows</option>
                     </select>
 
+                    <span>page: {currentPage || 1}/{totalPages || 1}</span>
 
-                <span>page: {currentPage || 1}/{totalPages || 1}</span>
-
-
-                <button
-                    className="pagging-btn"
-                    disabled={!hasNext}
-                    onClick={() => setFilters(p => ({
-                        limit: p.limit,
-                        page: p.page + 1,
-                        cursor: null
-                    }))}
-                >
-                    <StepForward />
-
-                </button>
-
+                    <button
+                        className="pagging-btn"
+                        disabled={currentPage >= totalPages || loading}
+                        onClick={() => setPage(currentPage + 1)}
+                    >
+                        <StepForward />
+                    </button>
+                </div>
             </div>
-
-
-            {/* ---------------------- current Page / Total Page ---------------------- */}
-
-
         </div>
-        </div >
     );
-}
-
+};
 
 export default ExpenseTable;

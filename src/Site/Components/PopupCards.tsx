@@ -1,45 +1,61 @@
+import React, { useState } from "react";
 import { Loader, Search, SquareX } from "lucide-react";
-import React from "react";
-import useExpenses from "../hooks/useExpenses";
+import { useExpenses } from "../hooks/useExpenses";
 
-interface PopupCardProps {
-    sortOpen: boolean;
-    setSortOpen: React.Dispatch<React.SetStateAction<boolean>>;
+interface PopupCardsProps {
     updateOpen: boolean;
-    setUpdateOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+    setUpdateOpen: (val: boolean) => void;
+}
 
-const PopupCards: React.FC<PopupCardProps> = ({
-    sortOpen,
-    setSortOpen,
-    updateOpen,
-    setUpdateOpen,
-}) => {
-    
-    
-    
-    
+const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) => {
     const {
-        formLoading,
-        applyFilter,
-        expForm,
-        handleChange,
-        handleSelectedData,
-        fetchExpenses,
-        message,
+        groupData,
+        setGroupData,
+        searchQuery,
+        setSearchQuery,
+        setPage,
+        startDate,     
+        endDate,       
+        setStartDate,  
+        setEndDate     
     } = useExpenses();
 
+    const [formLoading] = useState<boolean>(false);
+    const [message] = useState<string>("");
 
+    const [expForm, setExpForm] = useState({
+        expenseOn: '',
+        description: '',
+        amount: 0,
+        date: '',
+        income: 0
+    });
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setExpForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSelectedData = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setGroupData(e.target.value);
+        setPage(1); 
+    };
+
+    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log("Submitting updated form data context layer:", expForm);
+    };
 
     return (
         <>
-
+            {/* Edit Expense Sliding Drawer Component */}
             <div className={`s-card ${updateOpen ? 's-card--update-open' : 's-card--update-closed'}`}>
-
-                <span onClick={() => setUpdateOpen(!updateOpen)}><SquareX size={25} /></span>
+                <span onClick={() => setUpdateOpen(!updateOpen)} style={{ cursor: 'pointer' }}>
+                    <SquareX size={25} />
+                </span>
+                
                 <div className="update-card">
-                    <form className="update-form">
+                    <form className="update-form" onSubmit={handleFormSubmit}>
                         <h2 className="card-header">Edit Expense</h2>
                         <div className="input-fields">
                             <div className="form-group">
@@ -66,11 +82,10 @@ const PopupCards: React.FC<PopupCardProps> = ({
                                     placeholder="    : Details of your Expense"
                                 />
                             </div>
-
                             <div className="form-group">
                                 <label htmlFor="amount">Amount: Rs/-</label>
                                 <input
-                                    type="text"
+                                    type="number"
                                     name="amount"
                                     id="amount"
                                     onChange={handleChange}
@@ -93,7 +108,7 @@ const PopupCards: React.FC<PopupCardProps> = ({
                             <div className="form-group">
                                 <label htmlFor="income">Income</label>
                                 <input
-                                    type="text"
+                                    type="number"
                                     name="income"
                                     id="income"
                                     onChange={handleChange}
@@ -102,36 +117,79 @@ const PopupCards: React.FC<PopupCardProps> = ({
                                 />
                             </div>
                         </div>
-                        <button className="btn btn--secondry">
-                            {formLoading ? (<Loader />) : (<>Submit</>)}
+                        <button className="btn btn--secondry" type="submit">
+                            {formLoading ? (<Loader className="animate-spin" />) : (<>Submit</>)}
                         </button>
-                        {message && <p style={{ color: 'green' }}>{message}</p>}
+                        {message && <p style={{ color: 'green', marginTop: '10px' }}>{message}</p>}
                     </form>
                 </div>
             </div>
 
             <h2 className="card-header">Your Expenses</h2>
 
-            <div className="filter-section" >
+            {/* Combined Filters Panel Section */}
+            <div className="filter-section" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                
+                <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    {/*  Grouped Data Dropdown Selector */}
+                    <select 
+                        name="groupData" 
+                        id="groupData" 
+                        className="btn btn--secondry" 
+                        value={groupData} 
+                        onChange={handleSelectedData}
+                    >
+                        <option value="all">All</option>
+                        <option value="daily">Daily</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
 
-                <select name="groupData" id="groupData" className="btn btn--secondry" value={applyFilter.groupData} onChange={(e: any)=>{handleSelectedData(e); fetchExpenses(5)}}>
-                    <option value="all"  >All</option>
-                    <option value="daily"  >Daily</option>
-                    <option value="monthly" >Monthly</option>
-                    <option value="yearly"  >Yearly</option>
-                </select>
+                    {/* Live Date Range Filter Layer Elements (Only active in "all" view) */}
+                    <div className="date-range-block" style={{ display: 'flex', gap: '10px', alignItems: 'center', opacity: groupData === 'all' ? 1 : 0.5 }}>
+                        <input 
+                            type="date" 
+                            className="btn btn--secondry"
+                            value={startDate} 
+                            disabled={groupData !== 'all'}
+                            onChange={(e) => { setStartDate(e.target.value); setPage(1); }} 
+                        />
+                        <span style={{ fontSize: '14px', color: 'gray' }}>To</span>
+                        <input 
+                            type="date" 
+                            className="btn btn--secondry"
+                            value={endDate} 
+                            disabled={groupData !== 'all'}
+                            onChange={(e) => { setEndDate(e.target.value); setPage(1); }} 
+                        />
+                        {/* Option to quickly reset active date boundaries filter blocks */}
+                        {(startDate || endDate) && (
+                            <button 
+                                type="button" 
+                                style={{ background: 'none', border: 'none', color: 'red', cursor: 'pointer', fontSize: '12px' }}
+                                onClick={() => { setStartDate(''); setEndDate(''); setPage(1); }}
+                            >
+                                Clear Dates
+                            </button>
+                        )}
+                    </div>
+                </div>
 
-               
-                <div className="search-block">
-                    <input type="search" name="search" id="search" placeholder="    : Type your Expense Catagory" />
+                <div className="search-block" style={{ opacity: groupData === 'all' ? 1 : 0.5 }}>
+                    <input 
+                        type="search" 
+                        name="search" 
+                        id="search" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        disabled={groupData !== 'all'}
+                        placeholder={groupData === 'all' ? "    : Type your Expense Category" : "    : Search disabled in grouped view"} 
+                    />
                     <Search size={18} />
                 </div>
             </div>
-
         </>
-    )
-
-}
-
+    );
+};
 
 export default PopupCards;

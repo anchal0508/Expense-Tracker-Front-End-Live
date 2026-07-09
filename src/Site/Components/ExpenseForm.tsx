@@ -1,23 +1,55 @@
 import { Loader } from "lucide-react";
-import useExpenses from "../hooks/useExpenses";
-import { useEffect } from "react";
+import { useState } from "react";
+import { useExpenses } from "../hooks/useExpenses";
 
 
 const ExpenseForm = () => {
-    const {
-        formLoading,
-        expForm,
-        handleChange,
-        handleFormSubmit,
-        message,
-        expLimit,
-        fetchExpenses,
-        
+ const { addExpense, loading: formLoading } = useExpenses();
 
-    } = useExpenses();
-    useEffect(() => {
-        fetchExpenses(expLimit)
-    }, [formLoading])
+    const [formMessage, setFormMessage] = useState<string>("");
+
+    const [expForm, setExpForm] = useState({
+        expenseOn: '',
+        description: '',
+        amount: '',
+        date: new Date().toISOString().split('T')[0], 
+        income: ''
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setExpForm((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+
+    const handleFormSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setFormMessage("");
+
+        const success = await addExpense({
+            expenseOn: expForm.expenseOn,
+            description: expForm.description,
+            amount: Number(expForm.amount) || 0,
+            date: expForm.date,
+            income: Number(expForm.income) || 0
+        });
+
+        if (success) {
+            setFormMessage("Expense added Successfully...!");
+            setExpForm({
+                expenseOn: '',
+                description: '',
+                amount: '',
+                date: new Date().toISOString().split('T')[0],
+                income: ''
+            });
+        } else {
+            setFormMessage("Failed to add transaction. Try again.");
+        }
+    };
 
 
     return (
@@ -85,14 +117,14 @@ const ExpenseForm = () => {
                         />
                     </div>
                 </div>
-                <button className="btn btn--primary" onClick={() => { fetchExpenses(expLimit) }}>
-                    {formLoading ? (<Loader />) : (<span>Submit</span>)}
+
+                <button className="btn btn--primary" type="submit" disabled={formLoading}>
+                    {formLoading ? (<Loader className="animate-spin" />) : (<span>Submit</span>)}
                 </button>
-                {message && <p style={{ color: 'green' }}>{message}</p>}
+                {formMessage && <p style={{ color: 'green', marginTop: '10px' }}>{formMessage}</p>}
             </form>
         </div>
     );
 }
-
 
 export default ExpenseForm;

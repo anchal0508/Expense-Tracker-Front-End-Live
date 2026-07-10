@@ -271,7 +271,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
 
     useEffect(() => {
         fetchExpenses();
-    }, [groupData, limit, page, startDate, endDate, delLoading, searchQuery]);
+    }, [groupData, limit, page, startDate, endDate, delLoading, searchQuery, isPremiumUser]);
 
 
     useEffect(() => {

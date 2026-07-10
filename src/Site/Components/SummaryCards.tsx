@@ -77,6 +77,7 @@ const SummaryCards = () => {
                 {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
 
                 <h3>Graph</h3>
+                <img src="https://www.google.com/imgres?q=graph%20png%20image&imgurl=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fthumbnails%2F020%2F953%2F642%2Fsmall%2Fbusiness-chart-with-arrow-free-png.png&imgrefurl=https%3A%2F%2Fwww.vecteezy.com%2Ffree-png%2Fgrowth-chart&docid=dRB-Owc0NzM6LM&tbnid=yFLex9-uDaDFmM&vet=12ahUKEwi3-P7mh8iVAxVxbmwGHQ-IGaEQnPAOegQIQhAA..i&w=350&h=350&hcb=2&ved=2ahUKEwi3-P7mh8iVAxVxbmwGHQ-IGaEQnPAOegQIQhAA" alt="Graph" />
             </div>
 
             <div className="bt-card box">

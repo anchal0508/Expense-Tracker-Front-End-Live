@@ -268,12 +268,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
             alert("Download failed! Ek baar console check kijiye.");
         }
     };
-
-    useEffect(() => {
-        fetchExpenses();
-    }, [groupData, limit, page, startDate, endDate, delLoading, searchQuery, isPremiumUser]);
-
-
+    
     useEffect(() => {
         if (user) {
             setIsPremiumUser(user.isPremium === true);
@@ -281,6 +276,11 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
             setIsPremiumUser(false);
         }
     }, [user]);
+    
+        useEffect(() => {
+            fetchExpenses();
+        }, [groupData, limit, page, startDate, endDate, delLoading, searchQuery, isPremiumUser]);
+    
 
     return (
         <ExpenseContext.Provider value={{

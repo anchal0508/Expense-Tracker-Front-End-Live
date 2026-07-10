@@ -5,7 +5,7 @@ import { useAuth } from "../../AuthContext";
 
 const SummaryCards = () => {
     const { expenses } = useExpenses();
-    const {user} = useAuth();
+    const { user } = useAuth();
 
     const calculateAnalytics = () => {
         const now = new Date();
@@ -63,53 +63,57 @@ const SummaryCards = () => {
 
     const analytics = calculateAnalytics();
 
-    
+
     return (
         <>
             <div className="side-box box">
-                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
+                {!(user?.isPremium) && <Crown className="premium-icon" size={16} />}
                 <h3>Monthly Income</h3>
-                {(user?.isPremium ) && <p style={{ color: 'green', fontWeight: 'bold' }}>Rs.: {analytics.monthlyIncome}</p>}
-                
+                {(user?.isPremium) && <p style={{ color: 'green', fontWeight: 'bold' }}>Rs.: {analytics.monthlyIncome}</p>}
+
             </div>
 
             <div className="side-box box">
-                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
+                {!(user?.isPremium) && <Crown className="premium-icon" size={16} />}
 
                 <h3>Graph</h3>
-                <img src="https://www.google.com/imgres?q=graph%20png%20image&imgurl=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fthumbnails%2F020%2F953%2F642%2Fsmall%2Fbusiness-chart-with-arrow-free-png.png&imgrefurl=https%3A%2F%2Fwww.vecteezy.com%2Ffree-png%2Fgrowth-chart&docid=dRB-Owc0NzM6LM&tbnid=yFLex9-uDaDFmM&vet=12ahUKEwi3-P7mh8iVAxVxbmwGHQ-IGaEQnPAOegQIQhAA..i&w=350&h=350&hcb=2&ved=2ahUKEwi3-P7mh8iVAxVxbmwGHQ-IGaEQnPAOegQIQhAA" alt="Graph" />
+                <img
+                    src="https://img.magnific.com/free-vector/growing-bar-graph-blue-cubes_1308-177035.jpg?semt=ais_hybrid&w=740&q=80"
+                    alt="Growth Chart Graph"
+                    style={{ maxWidth: '100%', height: 'auto' }}
+                />
             </div>
 
             <div className="bt-card box">
-                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
+                {!(user?.isPremium) && <Crown className="premium-icon" size={16} />}
                 <h3>Previous Month</h3>
-                {(user?.isPremium ) && <p>Rs.: {analytics.previousMonthExpense}</p>}
+                {(user?.isPremium) && <p>Rs.: {analytics.previousMonthExpense}</p>}
             </div>
 
             <div className="bt-card box">
-                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
+                {!(user?.isPremium) && <Crown className="premium-icon" size={16} />}
                 <h3>Last Year</h3>
-                {(user?.isPremium ) && <p>Rs.: {analytics.lastYearExpense}</p>}
+                {(user?.isPremium) && <p>Rs.: {analytics.lastYearExpense}</p>}
             </div>
 
             <div className="bt-card box">
-                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
+                {!(user?.isPremium) && <Crown className="premium-icon" size={16} />}
                 <h3>Upcoming</h3>
-              {(user?.isPremium ) &&   <p>Rs.: 0</p>}
+                {(user?.isPremium) && <p>Rs.: 0</p>}
             </div>
 
             <div className="bt-card box">
-                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
+                {!(user?.isPremium) && <Crown className="premium-icon" size={16} />}
                 <h3>Overall Savings</h3>
-               {(user?.isPremium ) &&  <p style={{ color: analytics.overallBalance >= 0 ? 'green' : 'red' }}>
+                {(user?.isPremium) && <p style={{ color: analytics.overallBalance >= 0 ? 'green' : 'red' }}>
                     Rs.: {analytics.overallBalance}
                 </p>}
             </div>
 
             <div className="bt-card box">
-                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
+                {!(user?.isPremium) && <Crown className="premium-icon" size={16} />}
                 <h3>Money Saved in %</h3>
-              {(user?.isPremium ) &&   <p style={{ color: analytics.savingsPct >= 0 ? 'green' : 'red' }}>
+                {(user?.isPremium) && <p style={{ color: analytics.savingsPct >= 0 ? 'green' : 'red' }}>
                     Avg.: {analytics.savingsPct}%
                 </p>}
             </div>

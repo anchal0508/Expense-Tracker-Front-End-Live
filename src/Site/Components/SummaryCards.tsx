@@ -87,9 +87,7 @@ const SummaryCards = () => {
             <div className="bt-card box">
                 {!(user?.isPremium) && <Crown className="premium-icon" size={16} />}
                 <h3>Previous Month</h3>
-                {setTimeout(() => {
-                    location.reload();
-                }, 1000)}
+                
                 {(user?.isPremium) && <p>Rs.: {analytics.previousMonthExpense}</p>}
             </div>
 

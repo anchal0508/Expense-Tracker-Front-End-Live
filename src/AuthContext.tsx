@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const checkLoggedInUser = async () => {
             try {
 
-                setTimeout(() => {
+               await setTimeout(() => {
                     console.log('Normal delay');
                 }, 1000);
                 const response = await API.get('/users/profile');

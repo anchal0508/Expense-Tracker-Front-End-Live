@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import API from '../../axiosConfig';
+import { useAuth } from '../../AuthContext';
 
 export interface ExpenseItem {
     id?: number;
@@ -58,6 +59,8 @@ interface ExpenseProviderProps {
 const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
 
 export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) => {
+
+    const { user } = useAuth();
     const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -271,6 +274,15 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
     useEffect(() => {
         fetchExpenses();
     }, [groupData, limit, page, startDate, endDate, delLoading, searchQuery]);
+
+
+    useEffect(() => {
+        if (user) {
+            setIsPremiumUser(user.isPremium === true);
+        } else {
+            setIsPremiumUser(false);
+        }
+    }, [user]);
 
     return (
         <ExpenseContext.Provider value={{

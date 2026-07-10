@@ -121,10 +121,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
                         if (updateRes.data.success) {
                             setPremiumMsg(updateRes.data.message || "Premium activated successfully!");
                             setIsPremiumUser(true);
-                            await setTimeout(() => {
-                                location.reload();
-                            }, 1000);
-
+                            window.location.reload();
                         }
                     } catch (err: any) {
                         setPremiumMsg(err.response?.data?.message || "Failed to update payment status.");

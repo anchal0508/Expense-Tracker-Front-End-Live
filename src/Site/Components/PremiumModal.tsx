@@ -1,11 +1,12 @@
 import { Crown, SquareX, CheckCircle } from "lucide-react";
 import { useExpenses } from "../hooks/useExpenses";
+import { useAuth } from "../../AuthContext";
 
 const PremiumModal = () => {
     const { isPremiumModalOpen, setIsPremiumModalOpen, handlePayment, premiumLoad, premiumMsg } = useExpenses();
 
     if (!isPremiumModalOpen) return null; 
-
+const {user} = useAuth();
     return (
         <div style={{
             position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -38,14 +39,14 @@ const PremiumModal = () => {
                     </div>
                 </div>
 
-                <button 
+                {user?.isPremium ? (<p>-</p>):(<button 
                     onClick={handlePayment}
                     className="gold-btn"
                     disabled={premiumLoad}
                     style={{ width: '100%', padding: '12px', fontSize: '16px', fontWeight: 'bold' }}
                 >
                     {premiumLoad ? "ProcessingSecure Gateway..." : "Activate Premium - ₹399"}
-                </button>
+                </button>)}
 
                 {premiumMsg && (
                     <p style={{ marginTop: '15px', color: premiumMsg.includes('Failed') ? 'red' : 'gold', fontSize: '14px' }}>

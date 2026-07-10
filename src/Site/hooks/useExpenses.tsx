@@ -121,7 +121,10 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
                         if (updateRes.data.success) {
                             setPremiumMsg(updateRes.data.message || "Premium activated successfully!");
                             setIsPremiumUser(true);
-                        
+                            await setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+
                         }
                     } catch (err: any) {
                         setPremiumMsg(err.response?.data?.message || "Failed to update payment status.");
@@ -268,7 +271,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
             alert("Download failed! Ek baar console check kijiye.");
         }
     };
-    
+
     useEffect(() => {
         if (user) {
             setIsPremiumUser(user.isPremium === true);
@@ -276,11 +279,11 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
             setIsPremiumUser(false);
         }
     }, [user]);
-    
-        useEffect(() => {
-            fetchExpenses();
-        }, [groupData, limit, page, startDate, endDate, delLoading, searchQuery, isPremiumUser]);
-    
+
+    useEffect(() => {
+        fetchExpenses();
+    }, [groupData, limit, page, startDate, endDate, delLoading, searchQuery, isPremiumUser]);
+
 
     return (
         <ExpenseContext.Provider value={{

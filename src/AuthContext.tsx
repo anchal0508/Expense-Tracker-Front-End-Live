@@ -29,35 +29,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-
+    
 
     useEffect(() => {
         const checkLoggedInUser = async () => {
             try {
-
-               await setTimeout(() => {
-                    console.log('Normal delay');
-                }, 1000);
-                const response = await API.get('/users/profile');
+                
+                const response = await API.get('/users/profile'); 
                 if (response.data?.success) {
                     setUser(response.data.data);
-                    console.log("User is premium: ", response.data.data);
+                    console.log("User is premium: ",response.data.data);
                 }
-            } catch (error: any) {
+            } catch (error:any) {
                 console.error("Profile check failed with error: ", error.response?.data || error.message);
                 //   await API.post('/users/logout');
-                setUser(null);
+                setUser(null); 
             } finally {
                 setLoading(false);
             }
         };
-        setTimeout(() => {
-            console.log('Normal delay');
-            checkLoggedInUser();
-        }, 1500);
-    }, []);
+        checkLoggedInUser();
+    }, []); 
 
-
+   
     const login = (userData: User) => {
         setUser(userData);
     };

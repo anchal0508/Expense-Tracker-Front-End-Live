@@ -41,6 +41,8 @@ interface ExpenseContextType {
 
     isPremiumModalOpen: boolean;
     setIsPremiumModalOpen: (val: boolean) => void;
+    isPremiumUser: boolean;
+    setIsPremiumUser: React.Dispatch<React.SetStateAction<boolean>>;
     premiumLoad: boolean;
     premiumMsg: string;
     handlePayment: () => Promise<void>;
@@ -72,6 +74,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
     const [isPremiumModalOpen, setIsPremiumModalOpen] = useState<boolean>(false);
     const [premiumLoad, setPremiumLoad] = useState<boolean>(false);
     const [premiumMsg, setPremiumMsg] = useState<string>("");
+    const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false);
 
     const [totalAmount, setTotalAmount] = useState<number>(0);
 
@@ -81,19 +84,75 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
 
     const handlePayment = async () => {
         setPremiumLoad(true);
-        setPremiumMsg("");
+        setPremiumMsg('');
+
         try {
-            const response = await API.post("/api/premium/update"); // Backend check logic route
-            if (response.data?.success) {
-                setPremiumMsg("Premium Activated Successfully! 🚀");
-                setTimeout(() => setIsPremiumModalOpen(false), 1500); // Success hone par auto-close
+            const response = await API.get('/premium/gold');
+
+            console.log("Full Backend Response:", response);
+
+            if (!response || !response.data) {
+                throw new Error("No data received from backend server");
             }
+
+            const { order, key_id } = response.data;
+
+            if (!order || !key_id) {
+                throw new Error(`Missing order or key_id from server. Order: ${order}, Key: ${key_id}`);
+            }
+
+            const options = {
+                key: key_id,
+                order_id: order.id,
+                name: "ABCROB Nexus",
+                description: "Buy Premium Membership",
+                handler: async function (razorpayResponse: any) {
+                    try {
+                        setPremiumLoad(true);
+                        const updateRes = await API.post('/premium/update', {
+                            razorpay_order_id: razorpayResponse.razorpay_order_id,
+                            razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+                            razorpay_signature: razorpayResponse.razorpay_signature
+                        });
+
+                        if (updateRes.data.success) {
+                            setPremiumMsg(updateRes.data.message || "Premium activated successfully!");
+                            setIsPremiumUser(true);
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        }
+                    } catch (err: any) {
+                        setPremiumMsg(err.response?.data?.message || "Failed to update payment status.");
+                    } finally {
+                        setPremiumLoad(false);
+                    }
+                },
+                theme: {
+                    color: "#2563eb"
+                },
+                modal: {
+                    ondismiss: function () {
+                        setPremiumLoad(false);
+                        setPremiumMsg("Payment cancelled by user.");
+                    }
+                }
+            };
+
+            if (typeof (window as any).Razorpay === 'undefined') {
+                throw new Error("Razorpay SDK not loaded. Did you forget to add the script tag in index.html?");
+            }
+
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
+
         } catch (error: any) {
-            setPremiumMsg("Payment failed or cancelled.");
-        } finally {
+            console.error("Exact FrontEnd Error Catch:", error);
+            setPremiumMsg(error.message || error.response?.data?.message || "Something went wrong while creating order.");
             setPremiumLoad(false);
         }
     };
+
 
     const fetchExpenses = async () => {
         setLoading(true);
@@ -211,7 +270,7 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
 
     useEffect(() => {
         fetchExpenses();
-    }, [groupData, limit, page, startDate, endDate, delLoading]);
+    }, [groupData, limit, page, startDate, endDate, delLoading, searchQuery]);
 
     return (
         <ExpenseContext.Provider value={{
@@ -243,6 +302,8 @@ export const ExpenseProvider: React.FC<ExpenseProviderProps> = ({ children }) =>
             setPremiumLoad,
             premiumMsg,
             setPremiumMsg,
+            isPremiumUser,
+            setIsPremiumUser,
             totalAmount,
             editingExpense,
             setEditingExpense,

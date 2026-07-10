@@ -37,6 +37,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 const response = await API.get('/users/profile'); 
                 if (response.data?.success) {
                     setUser(response.data.data);
+                    console.log("User is premium: ",response.data.data);
                 }
             } catch (error:any) {
                 console.error("Profile check failed with error: ", error.response?.data || error.message);
@@ -56,7 +57,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const logout = async () => {
         try {
-            await API.post('/users/logout');
+            const response = await API.post('/users/logout');
+            console.log(response);
         } catch (error) {
             console.error("Logout failed", error);
         } finally {

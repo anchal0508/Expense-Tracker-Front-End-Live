@@ -16,7 +16,8 @@ const Profile: React.FC = () => {
                 <h2><span>Email:</span><span>{user?.email}</span> </h2>
                 <h2><span>Phone:</span><span>{user?.phone}</span> </h2>
                 <h2><span>Address:</span><span>{user?.address}</span> </h2>
-                <h2><span>Premium User:</span><span>{user?.isPremium}</span> </h2>
+                
+                <h2><span>Premium User:</span><span>{user && user.isPremium}</span> </h2>
             </div>
         </div>
     )

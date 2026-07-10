@@ -24,7 +24,7 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
 
     } = useExpenses();
 
-     const [formLoading, setFormLoading] = useState<boolean>(false);
+    const [formLoading, setFormLoading] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
 
     const [expForm, setExpForm] = useState({
@@ -75,11 +75,11 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
 
         if (success) {
             setMessage("Expense updated successfully!");
-            setEditingExpense(null); 
+            setEditingExpense(null);
             setTimeout(() => {
                 setUpdateOpen(false);
                 setMessage("");
-            }, 1000); 
+            }, 1000);
         } else {
             setMessage("Failed to update execution parameters.");
         }
@@ -221,9 +221,12 @@ const PopupCards: React.FC<PopupCardsProps> = ({ updateOpen, setUpdateOpen }) =>
                         name="search"
                         id="search"
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setPage(1); 
+                        }}
                         disabled={groupData !== 'all'}
-                        placeholder={groupData === 'all' ? "    : Type your Expense Category" : "    : Search disabled in grouped view"}
+                        placeholder={groupData === 'all' ? "Type Expense Category or Description..." : "Search disabled in grouped view"}
                     />
                     <Search size={18} />
                 </div>

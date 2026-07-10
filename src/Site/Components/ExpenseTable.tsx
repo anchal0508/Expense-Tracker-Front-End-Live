@@ -3,6 +3,7 @@ import { useState } from "react";
 import { formatDate } from "../types/DateFormates";
 import { useExpenses } from "../hooks/useExpenses";
 import PopupCards from "./PopupCards";
+import { useAuth } from "../../AuthContext";
 
 const ExpenseTable = () => {
     const {
@@ -19,12 +20,13 @@ const ExpenseTable = () => {
         premiumLoad,
         premiumMsg,
         deleteExpense,
-        setEditingExpense
+        setEditingExpense,
 
     } = useExpenses();
 
+    const {user} = useAuth();
+
     const [updateOpen, setUpdateOpen] = useState<boolean>(false);
-    const [updateLoad, setUpdateLoad] = useState<boolean>(false);
     const [delLoading, setDelLoading] = useState<boolean>(false);
     const [acitveDelete, setActiveDelete] = useState<number | string | null>(null);
 
@@ -46,7 +48,7 @@ const ExpenseTable = () => {
             <PopupCards updateOpen={updateOpen} setUpdateOpen={setUpdateOpen} />
 
             <div className="action-btn">
-                <button
+                {user?.isPremium   ? (<span style={{color: "gold", fontWeight: "800", fontSize: "25px"}}>Premium User</span>):  <button
                     onClick={() => setIsPremiumModalOpen(true)}
                     className="gold-btn"
                     disabled={premiumLoad}
@@ -56,7 +58,8 @@ const ExpenseTable = () => {
                     ) : (
                         <span><Crown size={16} /> . Buy Premium</span>
                     )}
-                </button>
+                </button>}
+               
 
                 {premiumMsg && (
                     <span style={{ marginLeft: "10px", color: "gold", fontSize: "14px" }}>

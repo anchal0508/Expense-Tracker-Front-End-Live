@@ -1,8 +1,11 @@
 import { Crown } from "lucide-react";
 import { useExpenses } from "../hooks/useExpenses";
+import { useAuth } from "../../AuthContext";
+
 
 const SummaryCards = () => {
     const { expenses } = useExpenses();
+    const {user} = useAuth();
 
     const calculateAnalytics = () => {
         const now = new Date();
@@ -45,8 +48,8 @@ const SummaryCards = () => {
         }
 
         const overallSavings = totalOverallIncome - totalOverallExpense;
-        const savingsPercentage = totalOverallIncome > 0 
-            ? Math.round((overallSavings / totalOverallIncome) * 100) 
+        const savingsPercentage = totalOverallIncome > 0
+            ? Math.round((overallSavings / totalOverallIncome) * 100)
             : 0;
 
         return {
@@ -60,50 +63,54 @@ const SummaryCards = () => {
 
     const analytics = calculateAnalytics();
 
+    
     return (
         <>
             <div className="side-box box">
+                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
                 <h3>Monthly Income</h3>
-                <p style={{ color: 'green', fontWeight: 'bold' }}>Rs.: {analytics.monthlyIncome}</p>
+                {(user?.isPremium ) && <p style={{ color: 'green', fontWeight: 'bold' }}>Rs.: {analytics.monthlyIncome}</p>}
+                
             </div>
-            
+
             <div className="side-box box">
-                <Crown className="premium-icon" size={16} /> 
+                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
+
                 <h3>Graph</h3>
             </div>
 
             <div className="bt-card box">
-                <Crown className="premium-icon" size={16} /> 
+                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
                 <h3>Previous Month</h3>
-                <p>Rs.: {analytics.previousMonthExpense}</p>
+                {(user?.isPremium ) && <p>Rs.: {analytics.previousMonthExpense}</p>}
             </div>
-            
+
             <div className="bt-card box">
-                <Crown className="premium-icon" size={16} /> 
+                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
                 <h3>Last Year</h3>
-                <p>Rs.: {analytics.lastYearExpense}</p>
+                {(user?.isPremium ) && <p>Rs.: {analytics.lastYearExpense}</p>}
             </div>
-            
+
             <div className="bt-card box">
-                <Crown className="premium-icon" size={16} /> 
+                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
                 <h3>Upcoming</h3>
-                <p>Rs.: 0</p>
+              {(user?.isPremium ) &&   <p>Rs.: 0</p>}
             </div>
-            
+
             <div className="bt-card box">
-                <Crown className="premium-icon" size={16} /> 
+                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
                 <h3>Overall Savings</h3>
-                <p style={{ color: analytics.overallBalance >= 0 ? 'green' : 'red' }}>
+               {(user?.isPremium ) &&  <p style={{ color: analytics.overallBalance >= 0 ? 'green' : 'red' }}>
                     Rs.: {analytics.overallBalance}
-                </p>
+                </p>}
             </div>
-            
+
             <div className="bt-card box">
-                <Crown className="premium-icon" size={16} /> 
+                {!(user?.isPremium ) && <Crown className="premium-icon" size={16} />}
                 <h3>Money Saved in %</h3>
-                <p style={{ color: analytics.savingsPct >= 0 ? 'green' : 'red' }}>
+              {(user?.isPremium ) &&   <p style={{ color: analytics.savingsPct >= 0 ? 'green' : 'red' }}>
                     Avg.: {analytics.savingsPct}%
-                </p>
+                </p>}
             </div>
         </>
     );

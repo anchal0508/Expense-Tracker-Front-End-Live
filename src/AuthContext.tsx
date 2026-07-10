@@ -10,7 +10,7 @@ interface User {
     dob?: string;
     profilePhoto?: string;
     address?: string;
-    isPremium?: string;
+    isPremium?: boolean;
 }
 
 interface AuthContextType {

@@ -77,11 +77,11 @@ const SummaryCards = () => {
                 {!(user?.isPremium) && <Crown className="premium-icon" size={16} />}
 
                 <h3>Graph</h3>
-                <img
+               {(user?.isPremium) && <img
                     src="https://img.magnific.com/free-vector/growing-bar-graph-blue-cubes_1308-177035.jpg?semt=ais_hybrid&w=740&q=80"
                     alt="Growth Chart Graph"
                     style={{ maxWidth: '100%', height: 'auto' }}
-                />
+                />}
             </div>
 
             <div className="bt-card box">

@@ -13,7 +13,6 @@ interface signupDetails {
 const SignUp: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
-    const navigate = useNavigate();
 
     const [signup, setSignup] = useState<signupDetails>({
         name: '',

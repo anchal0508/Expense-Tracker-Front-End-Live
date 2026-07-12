@@ -1,7 +1,7 @@
 import type React from "react";
 import { useState } from "react";
 import API from "../../axiosConfig";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import { Bubbles, Loader } from "lucide-react";
 
@@ -110,6 +110,7 @@ const LogIn: React.FC = () => {
                     }
                 </button>
             </form>
+            <Link to="/fogotpassword">Forgot Password?</Link>
 
         </div>
     )

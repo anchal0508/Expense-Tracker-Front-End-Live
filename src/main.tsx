@@ -10,6 +10,8 @@ import ProtectedRoutes from './ProtectedRoutes.tsx';
 import { AuthProvider } from './AuthContext.tsx';
 import GuestRoutes from './GuestRoutes.tsx';
 import { ExpenseProvider } from './Site/hooks/useExpenses.tsx';
+import ForgotPassword from './Site/ForgotPassword.tsx';
+import ResetPassword from './Site/ResetPassword.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -22,6 +24,8 @@ createRoot(document.getElementById('root')!).render(
 
               <Route element={<GuestRoutes />}>
                 <Route path='/' element={<Home />} />
+                <Route path='/fogotpassword' element={<ForgotPassword />} />
+                <Route path='/reset-password/:id' element={<ResetPassword />} />
 
               </Route>
 

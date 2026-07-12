@@ -54,7 +54,7 @@ const SignUp: React.FC = () => {
             const response = await API.post('/users/addUser', newUser);
             if (response.status === 201) {
                 setMessage(response.data.data.message);
-                navigate('/');
+                // navigate('/');
             }
         } catch (error: any) {
             setMessage(error.message);
@@ -68,8 +68,9 @@ const SignUp: React.FC = () => {
         <div className="card">
             <header>
                 <h1>Join us Today</h1>
-                {message && <span>{message}</span>}
+                <p style={{ color: 'red' }}>{message && <span>{message}</span>}</p>
             </header>
+            <br />
             <form className="form-field" onSubmit={handleFormSubmit}>
 
                 <div className="form-group">

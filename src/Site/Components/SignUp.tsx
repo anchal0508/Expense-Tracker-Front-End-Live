@@ -1,7 +1,6 @@
 import { Bubbles, Loader } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import API from "../../axiosConfig";
 interface signupDetails {
     name: string,
